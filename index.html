@@ -37,6 +37,17 @@
         .next-btn:disabled { background-color: #ccc; cursor: not-allowed; }
     </style>
 </head>
+<button onclick="clearChecked()" style="padding: 10px; margin: 10px 0; background: #f44336; color: white; border: none; cursor: pointer;">Wyczyść listę CHECKED</button>
+
+<script>
+function clearChecked() {
+    if (confirm('Do you want clear all keywords used?')) {
+        localStorage.removeItem('checkedNames');
+        loadChecked();
+        alert('Lista wyczyszczona!');
+    }
+}
+</script>
 <body onload="loadChecked()">
     <h1>Combination Generator</h1>
     <p>Bubu, here write keyword.</p>
