@@ -50,7 +50,7 @@
 </head>
 <body onload="loadChecked()">
     <h1>Combination Generator</h1>
-    <p>Enter a name (e.g., "Mati"), and the program will generate combinations with letter variations and suffixes.</p>
+    <p>Bubu enter here keyword and it will make all kflasjflkasfas</p>
     
     <input type="text" id="inputName" placeholder="Enter name">
     <button onclick="generate()">Generate</button>
@@ -67,7 +67,7 @@
     <div id="allChecked"></div>
 
     <!-- Przycisk do czyszczenia listy CHECKED – całkiem na dole -->
-    <button class="clear-btn" onclick="clearChecked()">Wyczyść listę CHECKED</button>
+    <button class="clear-btn" onclick="clearChecked()">Clear checked keywords</button>
 
     <script>
         let currentIndex = 0;
@@ -183,10 +183,10 @@
 
         // Funkcja do czyszczenia listy CHECKED
         function clearChecked() {
-            if (confirm('Na pewno chcesz wyczyścić całą listę CHECKED?')) {
+            if (confirm('Clear keywords?')) {
                 localStorage.removeItem('checkedNames');
                 loadChecked();
-                alert('Lista CHECKED została wyczyszczona!');
+                alert('so be it its cleared now');
             }
         }
 
