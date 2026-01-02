@@ -5,7 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Combination Generator</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background-image: url(oc.png);
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+            background-color: white; /* Fallback jeśli obrazek nie załaduje się */
+            position: relative; 
+        }
+        /* Lekki overlay dla czytelności tekstu */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.85); /* Półprzezroczysty biały panel */
+            z-index: -1;
+        }
         input, button { padding: 10px; margin: 10px 0; }
         #output, #checkedOutput, #allChecked { 
             display: flex; 
@@ -14,43 +34,44 @@
             border: 1px solid #ccc; 
             padding: 10px; 
             min-height: 100px; 
+            background: rgba(255, 255, 255, 0.9); /* Białe tło dla sekcji */
         }
         .combo-item { margin: 5px; transition: opacity 0.3s; }
         .copy-btn { 
             padding: 8px 12px;
-            background-color: #f0f0f0; 
-            border: 1px solid #ccc; 
+            background-color: #e0e0e0; 
+            border: 1px solid #bbb; 
             cursor: pointer; 
             border-radius: 4px;
         }
-        .copy-btn:hover { background-color: #e0e0e0; }
+        .copy-btn:hover { background-color: #d0d0d0; }
         .next-btn { 
             padding: 10px; 
             margin: 10px 0; 
-            background-color: #4CAF50; 
+            background-color: #2e7d32; /* Ciemniejszy zielony */
             color: white; 
             border: none; 
             cursor: pointer; 
             border-radius: 4px;
         }
-        .next-btn:hover { background-color: #45a049; }
+        .next-btn:hover { background-color: #1b5e20; }
         .next-btn:disabled { background-color: #ccc; cursor: not-allowed; }
         .clear-btn {
             padding: 10px;
             margin: 20px 0;
-            background: #f44336;
+            background: #d32f2f;
             color: white;
             border: none;
             cursor: pointer;
             border-radius: 4px;
             font-size: 16px;
         }
-        .clear-btn:hover { background: #d32f2f; }
+        .clear-btn:hover { background: #b71c1c; }
     </style>
 </head>
 <body onload="loadChecked()">
     <h1>Combination Generator</h1>
-    <p>Bubu enter here keyword and it will make all kflasjflkasfas</p>
+    <p>Enter keyword here and it will generate combinations fsajklfjaslkfasjgla</p>
     
     <input type="text" id="inputName" placeholder="Enter keyword">
     <button onclick="generate()">Generate</button>
@@ -186,7 +207,7 @@
             if (confirm('Clear keywords?')) {
                 localStorage.removeItem('checkedNames');
                 loadChecked();
-                alert('so be it its cleared now');
+                alert('So be it, it's cleared now!');
             }
         }
 
