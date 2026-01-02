@@ -86,13 +86,17 @@
 
         async function checkNext() {
             if (currentIndex >= combos.length) return;
+            
             const combo = combos[currentIndex];
             const success = await copyToClipboard(combo);
             if (success) {
-                const item = document.createElement('div');
-                item.className = 'combo-item';
-                item.innerHTML = `<button class="copy-btn" disabled>${combo}</button>`;
-                document.getElementById('checkedOutput').appendChild(item);
+                // Przenieś z Results do Checked result
+                const resultItems = document.querySelectorAll('#output .combo-item');
+                if (resultItems.length > currentIndex) {
+                    const itemToMove = resultItems[currentIndex];
+                    itemToMove.querySelector('button').disabled = true;
+                    document.getElementById('checkedOutput').appendChild(itemToMove);
+                }
                 
                 currentIndex++;
                 updateNextButton();
@@ -162,7 +166,6 @@
             loadChecked();
         }
 
-        // Załaduj listę przy starcie
         loadChecked();
     </script>
 </body>
