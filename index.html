@@ -1,137 +1,169 @@
-<script>
-    let currentIndex = 0;
-    let combos = [];
-    let currentName = '';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combination Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        input, button { padding: 10px; margin: 10px 0; }
+        #output, #checkedOutput, #allChecked { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: flex-start; 
+            border: 1px solid #ccc; 
+            padding: 10px; 
+            min-height: 100px; 
+        }
+        .combo-item { margin: 5px; }
+        .copy-btn { 
+            padding: 8px 12px;
+            background-color: #f0f0f0; 
+            border: 1px solid #ccc; 
+            cursor: pointer; 
+            border-radius: 4px;
+        }
+        .copy-btn:hover { background-color: #e0e0e0; }
+        .next-btn { 
+            padding: 10px; 
+            margin: 10px 0; 
+            background-color: #4CAF50; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            border-radius: 4px;
+        }
+        .next-btn:hover { background-color: #45a049; }
+        .next-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+    </style>
+</head>
+<body onload="loadChecked()">
+    <h1>Combination Generator</h1>
+    <p>Enter a name (e.g., "Mati"), and the program will generate combinations with letter variations and suffixes.</p>
     
-    function generateCombinations(name) {
-        const combinations = [];
-        const suffixes = ['2005', '20055', '2005-', '2005_'];
-        const uppercase = name.toUpperCase();
-        const lowercase = name.toLowerCase();
-        const capitalize = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-        suffixes.forEach(suffix => {
-            combinations.push(uppercase + suffix);
-            combinations.push(lowercase + suffix);
-            combinations.push(capitalize + suffix);
-        });
-        return [...new Set(combinations)];
-    }
+    <input type="text" id="inputName" placeholder="Enter name">
+    <button onclick="generate()">Generate</button>
+    
+    <h2>Results:</h2>
+    <div id="output"></div>
+    
+    <button class="next-btn" id="nextBtn" onclick="checkNext()" disabled>Check next result</button>
+    
+    <h2>Checked result:</h2>
+    <div id="checkedOutput"></div>
+    
+    <h2>CHECKED:</h2>
+    <div id="allChecked"></div>
 
-    function copyToClipboard(text) {
-        return navigator.clipboard.writeText(text).then(() => {
-            alert('Copied to clipboard: ' + text);
-            return true;
-        }).catch(err => {
-            console.error('Copy error: ', err);
-            alert('Failed to copy - try manually.');
-            return false;
-        });
-    }
-
-    async function checkNext() {
-        if (currentIndex >= combos.length) return;
-        const combo = combos[currentIndex];
-        const success = await copyToClipboard(combo);
-        if (success) {
-            const item = document.createElement('div');
-            item.className = 'combo-item';
-            item.innerHTML = `<button class="copy-btn" disabled>${combo}</button>`;
-            document.getElementById('checkedOutput').appendChild(item);
-            
-            currentIndex++;
-            updateNextButton();
-            
-            if (currentIndex === combos.length) {
-                addNameToChecked();
-            }
-        }
-    }
-
-    function updateNextButton() {
-        const btn = document.getElementById('nextBtn');
-        if (currentIndex < combos.length) {
-            btn.disabled = false;
-            btn.innerText = `Check next result (${currentIndex + 1}/${combos.length})`;
-        } else {
-            btn.disabled = true;
-            btn.innerText = 'All checked';
-        }
-    }
-
-    // Dodaj imię do shared listy
-    function addNameToChecked() {
-        fetch('checked.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: currentName })
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Server error: ' + response.status);
-            return response.json();
-        })
-        .then(data => {
-            if (data.error) {
-                alert('Error saving name: ' + data.error + '\nCheck file permissions (checked.txt should be writable)');
-            } else {
-                loadChecked(); // odśwież listę
-                alert('Name "' + currentName + '" saved globally!');
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert('Connection error or server problem:\n' + err.message + '\nCheck if checked.php works');
-        });
-    }
-
-    // Załaduj listę sprawdzonych imion
-    function loadChecked() {
-        fetch('checked.php')
-            .then(response => {
-                if (!response.ok) throw new Error('HTTP ' + response.status);
-                return response.json();
-            })
-            .then(data => {
-                const allChecked = document.getElementById('allChecked');
-                allChecked.innerHTML = '';
-                data.forEach(name => {
-                    const item = document.createElement('div');
-                    item.className = 'combo-item';
-                    item.innerHTML = `<button class="copy-btn" disabled>${name}</button>`;
-                    allChecked.appendChild(item);
-                });
-            })
-            .catch(err => {
-                console.error('Load error:', err);
-                document.getElementById('allChecked').innerHTML = '<p style="color:red;">Error loading checked names<br>Check console (F12)</p>';
+    <script>
+        let currentIndex = 0;
+        let combos = [];
+        let currentName = '';
+        
+        function generateCombinations(name) {
+            const combinations = [];
+            const suffixes = ['2005', '20055', '2005-', '2005_'];
+            const uppercase = name.toUpperCase();
+            const lowercase = name.toLowerCase();
+            const capitalize = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+            suffixes.forEach(suffix => {
+                combinations.push(uppercase + suffix);
+                combinations.push(lowercase + suffix);
+                combinations.push(capitalize + suffix);
             });
-    }
-
-    function generate() {
-        const name = document.getElementById('inputName').value.trim();
-        if (!name) {
-            alert('Enter name!');
-            return;
+            return [...new Set(combinations)];
         }
-        
-        document.getElementById('checkedOutput').innerHTML = '';
-        
-        currentName = name;
-        combos = generateCombinations(name);
-        const output = document.getElementById('output');
-        output.innerHTML = '';
-        
-        combos.forEach(combo => {
-            const item = document.createElement('div');
-            item.className = 'combo-item';
-            item.innerHTML = `<button class="copy-btn" disabled>${combo}</button>`;
-            output.appendChild(item);
-        });
-        
-        currentIndex = 0;
-        updateNextButton();
-        loadChecked();
-    }
 
-    // Załaduj przy starcie
-    loadChecked();
-</script>
+        function copyToClipboard(text) {
+            return navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard: ' + text);
+                return true;
+            }).catch(() => {
+                alert('Failed to copy - try manually.');
+                return false;
+            });
+        }
+
+        async function checkNext() {
+            if (currentIndex >= combos.length) return;
+            const combo = combos[currentIndex];
+            const success = await copyToClipboard(combo);
+            if (success) {
+                const item = document.createElement('div');
+                item.className = 'combo-item';
+                item.innerHTML = `<button class="copy-btn" disabled>${combo}</button>`;
+                document.getElementById('checkedOutput').appendChild(item);
+                
+                currentIndex++;
+                updateNextButton();
+                
+                if (currentIndex === combos.length) {
+                    addNameToChecked();
+                }
+            }
+        }
+
+        function updateNextButton() {
+            const btn = document.getElementById('nextBtn');
+            if (currentIndex < combos.length) {
+                btn.disabled = false;
+                btn.innerText = `Check next result (${currentIndex + 1}/${combos.length})`;
+            } else {
+                btn.disabled = true;
+                btn.innerText = 'All checked';
+            }
+        }
+
+        function addNameToChecked() {
+            let checked = JSON.parse(localStorage.getItem('checkedNames') || '[]');
+            if (!checked.includes(currentName)) {
+                checked.push(currentName);
+                localStorage.setItem('checkedNames', JSON.stringify(checked));
+            }
+            loadChecked();
+            alert('Name "' + currentName + '" added to CHECKED!');
+        }
+
+        function loadChecked() {
+            const checked = JSON.parse(localStorage.getItem('checkedNames') || '[]');
+            const allChecked = document.getElementById('allChecked');
+            allChecked.innerHTML = '';
+            checked.forEach(name => {
+                const item = document.createElement('div');
+                item.className = 'combo-item';
+                item.innerHTML = `<button class="copy-btn" disabled>${name}</button>`;
+                allChecked.appendChild(item);
+            });
+        }
+
+        function generate() {
+            const name = document.getElementById('inputName').value.trim();
+            if (!name) {
+                alert('Enter name!');
+                return;
+            }
+            
+            document.getElementById('checkedOutput').innerHTML = '';
+            
+            currentName = name;
+            combos = generateCombinations(name);
+            const output = document.getElementById('output');
+            output.innerHTML = '';
+            
+            combos.forEach(combo => {
+                const item = document.createElement('div');
+                item.className = 'combo-item';
+                item.innerHTML = `<button class="copy-btn" disabled>${combo}</button>`;
+                output.appendChild(item);
+            });
+            
+            currentIndex = 0;
+            updateNextButton();
+            loadChecked();
+        }
+
+        // Załaduj listę przy starcie
+        loadChecked();
+    </script>
+</body>
+</html>
