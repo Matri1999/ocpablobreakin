@@ -35,12 +35,22 @@
         }
         .next-btn:hover { background-color: #45a049; }
         .next-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+        .clear-btn {
+            padding: 10px;
+            margin: 20px 0;
+            background: #f44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .clear-btn:hover { background: #d32f2f; }
     </style>
 </head>
-</script>
 <body onload="loadChecked()">
     <h1>Combination Generator</h1>
-    <p>Bubu, here write keyword and it will do its thing fjslakfjsalkfsaf</p>
+    <p>Enter a name (e.g., "Mati"), and the program will generate combinations with letter variations and suffixes.</p>
     
     <input type="text" id="inputName" placeholder="Enter name">
     <button onclick="generate()">Generate</button>
@@ -55,6 +65,9 @@
     
     <h2>CHECKED:</h2>
     <div id="allChecked"></div>
+
+    <!-- Przycisk do czyszczenia listy CHECKED – całkiem na dole -->
+    <button class="clear-btn" onclick="clearChecked()">Wyczyść listę CHECKED</button>
 
     <script>
         let currentIndex = 0;
@@ -87,13 +100,10 @@
             const success = await copyToClipboard(combo);
             
             if (success) {
-                // Pobierz element z tablicy (w kolejności dodawania)
                 const itemToMove = resultItems[currentIndex];
                 if (itemToMove) {
-                    // Lekka animacja znikania
                     itemToMove.style.opacity = '0.5';
                     setTimeout(() => {
-                        // Przenieś do Checked result
                         itemToMove.querySelector('button').disabled = true;
                         document.getElementById('checkedOutput').appendChild(itemToMove);
                         itemToMove.style.opacity = '1';
@@ -156,14 +166,14 @@
             combos = generateCombinations(name);
             const output = document.getElementById('output');
             output.innerHTML = '';
-            resultItems = []; // Wyczyść tablicę
+            resultItems = [];
             
             combos.forEach(combo => {
                 const item = document.createElement('div');
                 item.className = 'combo-item';
                 item.innerHTML = `<button class="copy-btn" disabled>${combo}</button>`;
                 output.appendChild(item);
-                resultItems.push(item); // Zapamiętaj w kolejności
+                resultItems.push(item);
             });
             
             currentIndex = 0;
@@ -171,17 +181,17 @@
             loadChecked();
         }
 
+        // Funkcja do czyszczenia listy CHECKED
+        function clearChecked() {
+            if (confirm('Na pewno chcesz wyczyścić całą listę CHECKED?')) {
+                localStorage.removeItem('checkedNames');
+                loadChecked();
+                alert('Lista CHECKED została wyczyszczona!');
+            }
+        }
+
+        // Załaduj listę przy starcie strony
         loadChecked();
     </script>
 </body>
-<button onclick="clearChecked()" style="padding: 10px; margin: 10px 0; background: #f44336; color: white; border: none; cursor: pointer;">Clear CHECKED words</button>
-
-<script>
-function clearChecked() {
-    if (confirm('Do you want clear all keywords used?')) {
-        localStorage.removeItem('checkedNames');
-        loadChecked();
-        alert('cleared!');
-    }
-}
 </html>
