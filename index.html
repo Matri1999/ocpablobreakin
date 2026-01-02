@@ -8,24 +8,14 @@
         body { 
             font-family: Arial, sans-serif; 
             margin: 20px; 
-            background-image: url(oc.png);
+            background-image: url('oc.png');
             background-size: cover; 
             background-position: center; 
             background-repeat: no-repeat; 
-            background-color: white; /* Fallback jeśli obrazek nie załaduje się */
+            background-color: white;
             position: relative; 
         }
-        /* Lekki overlay dla czytelności tekstu */
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.85); /* Półprzezroczysty biały panel */
-            z-index: -1;
-        }
+        /* Usunięto biały overlay, aby background był w pełni widoczny */
         input, button { padding: 10px; margin: 10px 0; }
         #output, #checkedOutput, #allChecked { 
             display: flex; 
@@ -34,7 +24,7 @@
             border: 1px solid #ccc; 
             padding: 10px; 
             min-height: 100px; 
-            background: rgba(255, 255, 255, 0.9); /* Białe tło dla sekcji */
+            /* Brak backgroundu, aby widać było ogólny background ciała */
         }
         .combo-item { margin: 5px; transition: opacity 0.3s; }
         .copy-btn { 
@@ -48,7 +38,7 @@
         .next-btn { 
             padding: 10px; 
             margin: 10px 0; 
-            background-color: #2e7d32; /* Ciemniejszy zielony */
+            background-color: #2e7d32;
             color: white; 
             border: none; 
             cursor: pointer; 
@@ -69,17 +59,17 @@
         .clear-btn:hover { background: #b71c1c; }
     </style>
 </head>
-<body onload="loadChecked()">
+<body>
     <h1>Combination Generator</h1>
     <p>Enter keyword here and it will generate combinations fsajklfjaslkfasjgla</p>
     
     <input type="text" id="inputName" placeholder="Enter keyword">
-    <button onclick="generate()">Generate</button>
+    <button id="generateBtn">Generate</button>
     
     <h2>Results:</h2>
     <div id="output"></div>
     
-    <button class="next-btn" id="nextBtn" onclick="checkNext()" disabled>Check next result</button>
+    <button class="next-btn" id="nextBtn" disabled>Check next result</button>
     
     <h2>Checked result:</h2>
     <div id="checkedOutput"></div>
@@ -87,14 +77,13 @@
     <h2>CHECKED:</h2>
     <div id="allChecked"></div>
 
-    <!-- Przycisk do czyszczenia listy CHECKED – całkiem na dole -->
-    <button class="clear-btn" onclick="clearChecked()">Clear checked keywords</button>
+    <button class="clear-btn" id="clearBtn">Clear checked keywords</button>
 
     <script>
         let currentIndex = 0;
         let combos = [];
         let currentName = '';
-        let resultItems = []; // Tablica do trzymania elementów w kolejności
+        let resultItems = [];
         
         function generateCombinations(name) {
             const combinations = [];
@@ -138,7 +127,7 @@
                     addNameToChecked();
                 }
             } else {
-                alert('Nie udało się skopiować – spróbuj ręcznie.');
+                alert("Failed to copy - try manually.");
             }
         }
 
@@ -177,7 +166,7 @@
         function generate() {
             const name = document.getElementById('inputName').value.trim();
             if (!name) {
-                alert('Enter name!');
+                alert('Enter keyword!');
                 return;
             }
             
@@ -202,16 +191,20 @@
             loadChecked();
         }
 
-        // Funkcja do czyszczenia listy CHECKED
         function clearChecked() {
             if (confirm('Clear keywords?')) {
                 localStorage.removeItem('checkedNames');
                 loadChecked();
-                alert('So be it, it's cleared now!');
+                alert("So be it, it's cleared now!");
             }
         }
 
-        // Załaduj listę przy starcie strony
+        // Podpinanie event listenerów
+        document.getElementById('generateBtn').addEventListener('click', generate);
+        document.getElementById('nextBtn').addEventListener('click', checkNext);
+        document.getElementById('clearBtn').addEventListener('click', clearChecked);
+
+        // Załaduj listę przy starcie
         loadChecked();
     </script>
 </body>
